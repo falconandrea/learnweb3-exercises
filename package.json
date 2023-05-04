@@ -1,0 +1,27 @@
+{
+  "name": "learnweb3-whitelist-dapp",
+  "version": "1.0.0",
+  "description": "LearnWeb3: Build a whitelist dApp",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/falconandrea/learnweb3-whitelist-dapp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/falconandrea/learnweb3-whitelist-dapp/issues"
+  },
+  "homepage": "https://github.com/falconandrea/learnweb3-whitelist-dapp#readme",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^2.0.2",
+    "hardhat": "^2.14.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3"
+  }
+}
