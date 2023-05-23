@@ -2,6 +2,10 @@
 
 ![Image](https://i.imgur.com/zgY0TGo.png)
 
+## Requirements
+
+- There should only exist N users inside the Whitelist.
+
 ## How to deploy Whitelist contract on Goerli
 
 ```batch
