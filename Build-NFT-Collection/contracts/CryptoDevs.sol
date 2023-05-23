@@ -61,17 +61,6 @@ contract CryptoDevs is ERC721Enumerable, Ownable {
     }
 
     /**
-    * @dev stopPresale stops a presale for the whitelisted addresses
-      */
-    function stopPresale() public onlyOwner {
-        require(presaleStarted, "Presale is not running");
-        presaleStarted = false;
-        // Set presaleEnded time as current timestamp + 5 minutes
-        // Solidity has cool syntax for timestamps (seconds, minutes, hours, days, years)
-        presaleEnded = block.timestamp + 5 minutes;
-    }
-
-    /**
       * @dev presaleMint allows a user to mint one NFT per transaction during the presale.
       */
     function presaleMint() public payable onlyWhenNotPaused {
