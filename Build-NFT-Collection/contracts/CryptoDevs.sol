@@ -53,7 +53,19 @@ contract CryptoDevs is ERC721Enumerable, Ownable {
     * @dev startPresale starts a presale for the whitelisted addresses
       */
     function startPresale() public onlyOwner {
+        require(!presaleStarted, "Presale is already running");
         presaleStarted = true;
+        // Set presaleEnded time as current timestamp + 5 minutes
+        // Solidity has cool syntax for timestamps (seconds, minutes, hours, days, years)
+        presaleEnded = block.timestamp + 5 minutes;
+    }
+
+    /**
+    * @dev stopPresale stops a presale for the whitelisted addresses
+      */
+    function stopPresale() public onlyOwner {
+        require(presaleStarted, "Presale is not running");
+        presaleStarted = false;
         // Set presaleEnded time as current timestamp + 5 minutes
         // Solidity has cool syntax for timestamps (seconds, minutes, hours, days, years)
         presaleEnded = block.timestamp + 5 minutes;
@@ -78,7 +90,7 @@ contract CryptoDevs is ERC721Enumerable, Ownable {
     * @dev mint allows a user to mint 1 NFT per transaction after the presale has ended.
     */
     function mint() public payable onlyWhenNotPaused {
-        require(presaleStarted && block.timestamp >=  presaleEnded, "Presale has not ended yet");
+        require(presaleStarted && block.timestamp >= presaleEnded, "Presale has not ended yet");
         require(tokenIds < maxTokenIds, "Exceed maximum Crypto Devs supply");
         require(msg.value >= _price, "Ether sent is not correct");
         tokenIds += 1;
@@ -98,6 +110,15 @@ contract CryptoDevs is ERC721Enumerable, Ownable {
       */
     function setPaused(bool val) public onlyOwner {
         _paused = val;
+    }
+
+    /**
+    * @dev updateSupply for update totalSupply
+      */
+    function updateTotalSupply(uint256 val) public onlyOwner {
+        require(val > 0, "New value must be greater than 0");
+        require(val > tokenIds, "New value must be greater than the number of NFTs already minted");
+        maxTokenIds = val;
     }
 
     /**
