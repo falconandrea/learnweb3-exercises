@@ -32,6 +32,18 @@
   font-size: 1.2rem;
 }
 
+.presaleStarted .description {
+  color: green;
+}
+
+.errorMessage {
+  color: red;
+}
+
+.successMessage {
+  color: green;
+}
+
 .button {
   border-radius: 4px;
   background-color: blue;

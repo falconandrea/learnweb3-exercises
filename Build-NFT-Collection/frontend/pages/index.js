@@ -3,10 +3,11 @@ import Head from 'next/head'
 import React, { useEffect, useRef, useState } from 'react'
 import Web3Modal from 'web3modal'
 import styles from '../styles/Home.module.css'
+import CrytpDevs from '../../artifacts/contracts/CryptoDevs.sol/CryptoDevs.json'
 
-const abi = process.env.NEXT_PUBLIC_ABI
+const abi = CrytpDevs.abi
+
 const NFT_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_NFT_CONTRACT_ADDRESS
-console.log('asd', NFT_CONTRACT_ADDRESS)
 
 export default function Home () {
   // walletConnected keep track of whether the user's wallet is connected or not
@@ -21,14 +22,25 @@ export default function Home () {
   const [isOwner, setIsOwner] = useState(false)
   // tokenIdsMinted keeps track of the number of tokenIds that have been minted
   const [tokenIdsMinted, setTokenIdsMinted] = useState('0')
+  // error message
+  const [errorMessage, setErrorMessage] = useState('')
+  // success message
+  const [successMessage, setSuccessMessage] = useState('')
   // Create a reference to the Web3 Modal (used for connecting to Metamask) which persists as long as the page is open
   const web3ModalRef = useRef()
+
+  const resetMessages = () => {
+    setErrorMessage('')
+    setSuccessMessage('')
+  }
 
   /**
    * presaleMint: Mint an NFT during the presale
    */
   const presaleMint = async () => {
     try {
+      // Reset messages
+      resetMessages()
       // We need a Signer here since this is a 'write' transaction.
       const signer = await getProviderOrSigner(true)
       // Create a new instance of the Contract with a Signer, which allows
@@ -44,9 +56,10 @@ export default function Home () {
       // wait for the transaction to get mined
       await tx.wait()
       setLoading(false)
-      window.alert('You successfully minted a Crypto Dev!')
+      setSuccessMessage('You successfully minted a Crypto Dev!')
     } catch (err) {
       console.error(err)
+      setErrorMessage('Error during presale mint')
     }
   }
 
@@ -55,6 +68,8 @@ export default function Home () {
    */
   const publicMint = async () => {
     try {
+      // Reset messages
+      resetMessages()
       // We need a Signer here since this is a 'write' transaction.
       const signer = await getProviderOrSigner(true)
       // Create a new instance of the Contract with a Signer, which allows
@@ -70,9 +85,10 @@ export default function Home () {
       // wait for the transaction to get mined
       await tx.wait()
       setLoading(false)
-      window.alert('You successfully minted a Crypto Dev!')
+      setSuccessMessage('You successfully minted a Crypto Dev!')
     } catch (err) {
       console.error(err)
+      setErrorMessage('Error during public mint')
     }
   }
 
@@ -81,12 +97,15 @@ export default function Home () {
     */
   const connectWallet = async () => {
     try {
+      // Reset messages
+      resetMessages()
       // Get the provider from web3Modal, which in our case is MetaMask
       // When used for the first time, it prompts the user to connect their wallet
       await getProviderOrSigner()
       setWalletConnected(true)
     } catch (err) {
       console.error(err)
+      setErrorMessage('Error during conneting mint')
     }
   }
 
@@ -110,6 +129,7 @@ export default function Home () {
       await checkIfPresaleStarted()
     } catch (err) {
       console.error(err)
+      setErrorMessage('Error during starting presale')
     }
   }
 
@@ -134,6 +154,7 @@ export default function Home () {
       return _presaleStarted
     } catch (err) {
       console.error(err)
+      setErrorMessage('Error during checking presale status')
       return false
     }
   }
@@ -165,6 +186,7 @@ export default function Home () {
       return hasEnded
     } catch (err) {
       console.error(err)
+      setErrorMessage('Error during checking presale status')
       return false
     }
   }
@@ -191,6 +213,7 @@ export default function Home () {
       }
     } catch (err) {
       console.error(err.message)
+      setErrorMessage('Error during checking owner')
     }
   }
 
@@ -211,6 +234,7 @@ export default function Home () {
       setTokenIdsMinted(_tokenIds.toString())
     } catch (err) {
       console.error(err)
+      setErrorMessage('Error during getting ids minted')
     }
   }
 
@@ -235,7 +259,7 @@ export default function Home () {
     // If user is not connected to the Goerli network, let them know and throw an error
     const { chainId } = await web3Provider.getNetwork()
     if (chainId !== 5) {
-      window.alert('Change the network to Goerli')
+      setErrorMessage('Change the network to Goerli')
       throw new Error('Change network to Goerli')
     }
 
@@ -287,6 +311,28 @@ export default function Home () {
     }
   }, [walletConnected])
 
+
+  /*
+      renderMessages: Returns the error or success message
+    */
+  const renderMessages = () => {
+    if(errorMessage) {
+      return (
+        <p className={styles.errorMessage}>
+          {errorMessage}
+        </p>
+      )
+    }
+
+    if(successMessage) {
+      return (
+        <p className={styles.successMessage}>
+        {successMessage}
+        </p>
+      )
+    }
+  }
+
   /*
       renderButton: Returns a button based on the state of the dapp
     */
@@ -326,7 +372,7 @@ export default function Home () {
     // If presale started, but hasn't ended yet, allow for minting during the presale period
     if (presaleStarted && !presaleEnded) {
       return (
-        <div>
+        <div className={styles.presaleStarted}>
           <div className={styles.description}>
             Presale has started!!! If your address is whitelisted, Mint a Crypto
             Dev 🥳
@@ -365,6 +411,7 @@ export default function Home () {
             {tokenIdsMinted}/20 have been minted
           </div>
           {renderButton()}
+          {renderMessages()}
         </div>
         <div>
           <img className={styles.image} src='./cryptodevs/0.svg' />
