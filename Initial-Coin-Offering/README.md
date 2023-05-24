@@ -8,3 +8,22 @@
 - Every Crypto Dev NFT holder should get 10 tokens for free but they would have to pay the gas fees.
 - The price of one CD at the time of ICO should be 0.001 ether.
 - There should be a website that users can visit for the ICO.
+
+## How to deploy Whitelist contract on Goerli
+
+```batch
+# Create .env file
+cp .env.example .env
+# update .env file with Private Key and Provider URL
+vim .env
+# compile contract
+npx hardhat compile
+# deploy on goerli network
+npx hardhat run script/deploy.js --network goerli
+```
+
+## How to run App in local env
+
+Get the contract address returned from deploy script and add it into `.env` file (duplicate `.env.example` file) inside the `frontend` directory.
+
+Now run `npm install && npm run dev` inside `frontend` directory.
