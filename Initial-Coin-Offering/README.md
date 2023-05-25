@@ -9,7 +9,9 @@
 - The price of one CD at the time of ICO should be 0.001 ether.
 - There should be a website that users can visit for the ICO.
 
-## How to deploy Whitelist contract on Goerli
+## How to deploy Coint contract on Goerli
+
+### You have to deploy before the NFT Contract to get the address to put inside the .env file
 
 ```batch
 # Create .env file
