@@ -108,6 +108,16 @@ contract CryptoDevsDAO is Ownable {
         _;
     }
 
+    // Create a modifier which only allows a function to be
+    // called if the given proposal exists
+    modifier existingProposalOnly(uint256 proposalIndex) {
+        require(
+            proposals[proposalIndex].nftTokenId >= 0,
+            "PROPOSAL_NOT_EXISTS"
+        );
+        _;
+    }
+
     // Create an enum named Vote containing possible options for a vote
     enum Vote {
         YAY, // YAY = 0
@@ -120,6 +130,7 @@ contract CryptoDevsDAO is Ownable {
     function voteOnProposal(uint256 proposalIndex, Vote vote)
         external
         nftHolderOnly
+        existingProposalOnly(proposalIndex)
         activeProposalOnly(proposalIndex)
     {
         Proposal storage proposal = proposals[proposalIndex];
