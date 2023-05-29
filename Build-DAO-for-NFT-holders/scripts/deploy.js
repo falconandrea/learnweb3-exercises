@@ -6,7 +6,7 @@
 // global scope, and execute the script.
 const hre = require("hardhat");
 require("dotenv").config();
-const CRYPTODEVS_NFT_CONTRACT_ADDRESS = process.env.CRYPTODEVS_NFT_CONTRACT_ADDRESS
+const CRYPTO_DEVS_NFT_CONTRACT_ADDRESS = process.env.CRYPTO_DEVS_NFT_CONTRACT_ADDRESS
 
 async function main() {
   // Deploy the FakeNFTMarketplace contract first
@@ -22,11 +22,11 @@ async function main() {
   const CryptoDevsDAO = await ethers.getContractFactory("CryptoDevsDAO");
   const cryptoDevsDAO = await CryptoDevsDAO.deploy(
     fakeNftMarketplace.address,
-    CRYPTODEVS_NFT_CONTRACT_ADDRESS,
+    CRYPTO_DEVS_NFT_CONTRACT_ADDRESS,
     {
       // This assumes your metamask account has at least 1 ETH in its account
       // Change this value as you want
-      value: ethers.utils.parseEther("1"),
+      value: ethers.utils.parseEther("0.1"),
     }
   );
   await cryptoDevsDAO.deployed();

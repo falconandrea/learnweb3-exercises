@@ -10,9 +10,11 @@
 - Voter cannot vote multiple times on the same proposal with the same NFT
 - If majority of the voters vote for the proposal by the deadline, the NFT purchase is automatically executed
 
-## How to deploy NFT Collection contract on Goerli
+## How to deploy NFT DAO contract on Goerli
 
 ### You have to deploy before the NFT Contract to get the address to put inside the .env file
+
+### Warning: pay attention to your deploy script file at line 29, you must have at least 0.1 eth on your wallet
 
 ```batch
 # Create .env file
