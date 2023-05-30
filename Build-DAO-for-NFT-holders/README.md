@@ -19,7 +19,7 @@
 ```batch
 # Create .env file
 cp .env.example .env
-# update .env file with Private Key, Provider URL, Whitelist Address and Metadata URL
+# update .env file with Private Key, Provider URL, NFT Contract Address and Metadata URL
 vim .env
 # compile contract
 npx hardhat compile
