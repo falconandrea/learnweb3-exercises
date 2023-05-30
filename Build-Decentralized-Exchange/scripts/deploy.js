@@ -6,14 +6,14 @@
 // global scope, and execute the script.
 const hre = require("hardhat");
 require("dotenv").config();
-const CRYPTO_DEVS_NFT_CONTRACT_ADDRESS = process.env.CRYPTO_DEVS_NFT_CONTRACT_ADDRESS
+const CRYPTO_DEVS_TOKEN_CONTRACT_ADDRESS = process.env.CRYPTO_DEVS_TOKEN_CONTRACT_ADDRESS
 
 async function main() {
   // Deploy the Exchange contract
   const Exchange = await ethers.getContractFactory(
     "Exchange"
   );
-  const exchange = await Exchange.deploy(CRYPTO_DEVS_NFT_CONTRACT_ADDRESS);
+  const exchange = await Exchange.deploy(CRYPTO_DEVS_TOKEN_CONTRACT_ADDRESS);
   await exchange.deployed();
 
   console.log("Exchange deployed to: ", exchange.address);
