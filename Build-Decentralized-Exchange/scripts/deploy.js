@@ -5,9 +5,18 @@
 // will compile your contracts, add the Hardhat Runtime Environment's members to the
 // global scope, and execute the script.
 const hre = require("hardhat");
+require("dotenv").config();
+const CRYPTO_DEVS_NFT_CONTRACT_ADDRESS = process.env.CRYPTO_DEVS_NFT_CONTRACT_ADDRESS
 
 async function main() {
+  // Deploy the Exchange contract
+  const Exchange = await ethers.getContractFactory(
+    "Exchange"
+  );
+  const exchange = await Exchange.deploy(CRYPTO_DEVS_NFT_CONTRACT_ADDRESS);
+  await exchange.deployed();
 
+  console.log("Exchange deployed to: ", exchange.address);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
