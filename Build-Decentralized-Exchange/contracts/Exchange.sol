@@ -2,6 +2,7 @@
 pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "hardhat/console.sol";
 
 contract Exchange is ERC20 {
     address public cryptoDevTokenAddress;
@@ -20,13 +21,29 @@ contract Exchange is ERC20 {
     }
 
     /**
+    * @dev Returns the amount of `Crypto Dev Tokens` held by the user
+    */
+    function getUserTokens() public view returns (uint) {
+      return ERC20(cryptoDevTokenAddress).balanceOf(address(msg.sender));
+    }
+
+    modifier _userHaveTokens {
+      require(getUserTokens() > 0, "You have not enough tokens");
+      _;
+    }
+
+    /**
     * @dev Adds liquidity to the exchange.
     */
-    function addLiquidity(uint _amount) public payable returns (uint) {
+    function addLiquidity(uint _amount) public payable _userHaveTokens returns (uint) {
         uint liquidity;
         uint ethBalance = address(this).balance;
         uint cryptoDevTokenReserve = getReserve();
         ERC20 cryptoDevToken = ERC20(cryptoDevTokenAddress);
+        console.log('cryptoDevTokenReserve', cryptoDevTokenReserve);
+        console.log('ethBalance', ethBalance);
+        console.log('_amount', _amount);
+
         /*
             If the reserve is empty, intake any user supplied value for
             `Ether` and `Crypto Dev` tokens because there is no ratio currently
@@ -53,6 +70,7 @@ contract Exchange is ERC20 {
             // EthReserve should be the current ethBalance subtracted by the value of ether sent by the user
             // in the current `addLiquidity` call
             uint ethReserve =  ethBalance - msg.value;
+            console.log(ethBalance, msg.value, ethReserve);
             // Ratio should always be maintained so that there are no major price impacts when adding liquidity
             // Ratio here is -> (cryptoDevTokenAmount user can add/cryptoDevTokenReserve in the contract) = (Eth Sent by the user/Eth Reserve in the contract);
             // So doing some maths, (cryptoDevTokenAmount user can add) = (Eth Sent by the user * cryptoDevTokenReserve /Eth Reserve);
