@@ -40,9 +40,6 @@ contract Exchange is ERC20 {
         uint ethBalance = address(this).balance;
         uint cryptoDevTokenReserve = getReserve();
         ERC20 cryptoDevToken = ERC20(cryptoDevTokenAddress);
-        console.log('cryptoDevTokenReserve', cryptoDevTokenReserve);
-        console.log('ethBalance', ethBalance);
-        console.log('_amount', _amount);
 
         /*
             If the reserve is empty, intake any user supplied value for
@@ -70,7 +67,6 @@ contract Exchange is ERC20 {
             // EthReserve should be the current ethBalance subtracted by the value of ether sent by the user
             // in the current `addLiquidity` call
             uint ethReserve =  ethBalance - msg.value;
-            console.log(ethBalance, msg.value, ethReserve);
             // Ratio should always be maintained so that there are no major price impacts when adding liquidity
             // Ratio here is -> (cryptoDevTokenAmount user can add/cryptoDevTokenReserve in the contract) = (Eth Sent by the user/Eth Reserve in the contract);
             // So doing some maths, (cryptoDevTokenAmount user can add) = (Eth Sent by the user * cryptoDevTokenReserve /Eth Reserve);
@@ -94,10 +90,11 @@ contract Exchange is ERC20 {
     * @dev Returns the amount Eth/Crypto Dev tokens that would be returned to the user
     * in the swap
     */
-    function removeLiquidity(uint _amount) public returns (uint , uint) {
+    function removeLiquidity(uint _amount) public _userHaveTokens returns (uint , uint) {
         require(_amount > 0, "_amount should be greater than zero");
         uint ethReserve = address(this).balance;
         uint _totalSupply = totalSupply();
+        require(_totalSupply > 0, "Total supply should be greater than zero");
         // The amount of Eth that would be sent back to the user is based
         // on a ratio
         // Ratio is -> (Eth sent back to the user) / (current Eth reserve)
