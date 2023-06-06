@@ -45,6 +45,7 @@ export const addLiquidity = async (
     await tx.wait();
   } catch (err) {
     console.error(err);
+    throw new Error("Error during add liquidity")
   }
 };
 

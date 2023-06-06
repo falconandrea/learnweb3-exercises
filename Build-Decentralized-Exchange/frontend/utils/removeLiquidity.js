@@ -9,14 +9,20 @@ import {
  * liquidity and also the calculated amount of `ether` and `CD` tokens
  */
 export const removeLiquidity = async (signer, removeLPTokensWei) => {
-  // Create a new instance of the exchange contract
-  const exchangeContract = new Contract(
-    EXCHANGE_CONTRACT_ADDRESS,
-    EXCHANGE_CONTRACT_ABI,
-    signer
-  );
-  const tx = await exchangeContract.removeLiquidity(removeLPTokensWei);
-  await tx.wait();
+  try {
+    // Create a new instance of the exchange contract
+    const exchangeContract = new Contract(
+      EXCHANGE_CONTRACT_ADDRESS,
+      EXCHANGE_CONTRACT_ABI,
+      signer
+    );
+    const tx = await exchangeContract.removeLiquidity(removeLPTokensWei);
+    await tx.wait();
+  }
+  catch(err) {
+    console.error(err);
+    throw new Error("Error during remove liquidity")
+  }
 };
 
 /**

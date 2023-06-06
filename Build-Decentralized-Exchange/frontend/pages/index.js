@@ -68,6 +68,9 @@ export default function Home() {
   const web3ModalRef = useRef();
   // walletConnected keep track of whether the user's wallet is connected or not
   const [walletConnected, setWalletConnected] = useState(false);
+  // Messages
+  const [errorMessage, setErrorMessage] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
 
   /**
    * getAmounts call various functions to retrive amounts for ethbalance,
@@ -75,6 +78,7 @@ export default function Home() {
    */
   const getAmounts = async () => {
     try {
+      setLoading(true)
       const provider = await getProviderOrSigner(false);
       const signer = await getProviderOrSigner(true);
       const address = await signer.getAddress();
@@ -94,7 +98,9 @@ export default function Home() {
       setReservedCD(_reservedCD);
       setReservedCD(_reservedCD);
       setEtherBalanceContract(_ethBalanceContract);
+      setLoading(false)
     } catch (err) {
+      setLoading(false)
       console.error(err);
     }
   };
@@ -105,6 +111,8 @@ export default function Home() {
    * swapTokens: Swaps  `swapAmountWei` of Eth/Crypto Dev tokens with `tokenToBeReceivedAfterSwap` amount of Eth/Crypto Dev tokens.
    */
   const _swapTokens = async () => {
+    setSuccessMessage('')
+    setErrorMessage('')
     try {
       // Convert the amount entered by the user to a BigNumber using the `parseEther` library from `ethers.js`
       const swapAmountWei = utils.parseEther(swapAmount);
@@ -124,11 +132,13 @@ export default function Home() {
         // Get all the updated amounts after the swap
         await getAmounts();
         setSwapAmount("");
+        setSuccessMessage('Swap completed')
       }
     } catch (err) {
       console.error(err);
       setLoading(false);
       setSwapAmount("");
+      setErrorMessage(err.message)
     }
   };
 
@@ -175,6 +185,8 @@ export default function Home() {
    * constant
    */
   const _addLiquidity = async () => {
+    setErrorMessage('')
+    setSuccessMessage('')
     try {
       // Convert the ether amount entered by the user to Bignumber
       const addEtherWei = utils.parseEther(addEther.toString());
@@ -189,11 +201,13 @@ export default function Home() {
         setAddCDTokens(zero);
         // Get amounts for all values after the liquidity has been added
         await getAmounts();
+        setSuccessMessage('Liquidity added')
       } else {
         setAddCDTokens(zero);
       }
     } catch (err) {
       console.error(err);
+      setErrorMessage(err.message)
       setLoading(false);
       setAddCDTokens(zero);
     }
@@ -208,6 +222,8 @@ export default function Home() {
    * liquidity and also the calculated amount of `ether` and `CD` tokens
    */
   const _removeLiquidity = async () => {
+    setSuccessMessage('')
+    setErrorMessage('')
     try {
       const signer = await getProviderOrSigner(true);
       // Convert the LP tokens entered by the user to a BigNumber
@@ -219,8 +235,10 @@ export default function Home() {
       await getAmounts();
       setRemoveCD(zero);
       setRemoveEther(zero);
+      setSuccessMessage('Liquidity removed')
     } catch (err) {
       console.error(err);
+      setErrorMessage(err.message)
       setLoading(false);
       setRemoveCD(zero);
       setRemoveEther(zero);
@@ -336,11 +354,6 @@ export default function Home() {
           Connect your wallet
         </button>
       );
-    }
-
-    // If we are currently waiting for something, return a loading button
-    if (loading) {
-      return <button className={styles.button}>Loading...</button>;
     }
 
     if (liquidityTab) {
@@ -489,6 +502,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className={styles.main}>
+        {loading ? (<div className={styles.loading}><p>Loading...</p></div>) : ''}
         <div>
           <h1 className={styles.title}>Welcome to Crypto Devs Exchange!</h1>
           <div className={styles.description}>
@@ -496,7 +510,7 @@ export default function Home() {
           </div>
           <div>
             <button
-              className={styles.button}
+              className={`${styles.button} ${liquidityTab ? styles.active : ''}`}
               onClick={() => {
                 setLiquidityTab(true);
               }}
@@ -504,7 +518,7 @@ export default function Home() {
               Liquidity
             </button>
             <button
-              className={styles.button}
+              className={`${styles.button} ${!liquidityTab ? styles.active : ''}`}
               onClick={() => {
                 setLiquidityTab(false);
               }}
@@ -513,6 +527,16 @@ export default function Home() {
             </button>
           </div>
           {renderButton()}
+          {
+            errorMessage ? (
+              <p className={styles.errorMessage}>{errorMessage}</p>
+            ) : ''
+          }
+          {
+            successMessage ? (
+              <p className={styles.successMessage}>{successMessage}</p>
+            ) : ''
+          }
         </div>
         <div>
           <img className={styles.image} src="./cryptodev.svg" />
