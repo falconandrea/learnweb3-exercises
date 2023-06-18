@@ -33,6 +33,13 @@ describe('Tests', function () {
         .to.be.revertedWith('Ownable: caller is not the owner')
     })
 
+    it('Should revert start game without max players limit', async function () {
+      const { randomWinnerGame, owner } = await loadFixture(deployFixture)
+
+      await expect(randomWinnerGame.connect(owner).startGame(0, hre.ethers.parseEther('0.001')))
+        .to.be.revertedWith('You cannot create a game with max players limit equal 0')
+    })
+
     it('Should start game for owner and emit event', async function () {
       const { randomWinnerGame, owner } = await loadFixture(deployFixture)
 
