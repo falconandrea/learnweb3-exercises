@@ -1,11 +1,17 @@
+"use client";
+
 import { BigNumber, Contract, ethers, providers, utils } from "ethers";
 import Head from "next/head";
 import React, { useEffect, useRef, useState } from "react";
 import Web3Modal from "web3modal";
-import { abi, RANDOM_GAME_NFT_CONTRACT_ADDRESS } from "../constants";
-import { FETCH_CREATED_GAME } from "../queries";
-import styles from "../styles/Home.module.css";
-import { subgraphQuery } from "../utils";
+import contract from "./../../artifacts/contracts/RandomWinnerGame.sol/RandomWinnerGame.json"
+const abi = contract.abi
+const RANDOM_GAME_NFT_CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS
+const NETWORK_ID = process.env.NEXT_PUBLIC_NETWORK_ID
+const NETWORK_NAME = process.env.NEXT_PUBLIC_NETWORK_NAME
+import { FETCH_CREATED_GAME } from "./queries";
+import styles from "./page.module.css";
+import { subgraphQuery } from "./utils";
 
 export default function Home() {
   const zero = BigNumber.from("0");
@@ -29,6 +35,9 @@ export default function Home() {
   const [logs, setLogs] = useState([]);
   // Create a reference to the Web3 Modal (used for connecting to Metamask) which persists as long as the page is open
   const web3ModalRef = useRef();
+
+  const [errorMessage, setErrorMessage] = useState("")
+  const [successMessage, setSuccessMessage] = useState("")
 
   // This is used to force react to re render the page when we want to
   // in our case we will use force update to show new logs
@@ -68,8 +77,8 @@ export default function Home() {
 
     // If user is not connected to the Mumbai network, let them know and throw an error
     const { chainId } = await web3Provider.getNetwork();
-    if (chainId !== 80001) {
-      window.alert("Change the network to Mumbai");
+    if (parseInt(chainId) !== parseInt(NETWORK_ID)) {
+      setErrorMessage(`Change the network to ${NETWORK_NAME}`);
       throw new Error("Change network to Mumbai");
     }
 
@@ -225,7 +234,7 @@ export default function Home() {
       // Assign the Web3Modal class to the reference object by setting it's `current` value
       // The `current` value is persisted throughout as long as this page is open
       web3ModalRef.current = new Web3Modal({
-        network: "mumbai",
+        network: NETWORK_NAME,
         providerOptions: {},
         disableInjectedProvider: false,
       });
@@ -237,6 +246,23 @@ export default function Home() {
       }, 2000);
     }
   }, [walletConnected]);
+
+  /*
+    renderMessages: Returns messages based on the state of the dapp
+  */
+  const renderMessages = () => {
+    if(successMessage) {
+      return (
+        <p className={styles.successMessage}>{successMessage}</p>
+      )
+    }
+
+    if(errorMessage) {
+      return (
+        <p className={styles.errorMessage}>{errorMessage}</p>
+      )
+    }
+  }
 
   /*
     renderButton: Returns a button based on the state of the dapp
@@ -251,10 +277,6 @@ export default function Home() {
       );
     }
 
-    // If we are currently waiting for something, return a loading button
-    if (loading) {
-      return <button className={styles.button}>Loading...</button>;
-    }
     // Render when the game has started
     if (gameStarted) {
       if (players.length === maxPlayers) {
@@ -315,6 +337,11 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className={styles.main}>
+        { loading &&
+          <div className={styles.loading}>
+            <p>Loading...</p>
+          </div>
+        }
         <div>
           <h1 className={styles.title}>Welcome to Random Winner Game!</h1>
           <div className={styles.description}>
@@ -322,6 +349,7 @@ export default function Home() {
             entire lottery pool
           </div>
           {renderButton()}
+          {renderMessages()}
           {logs &&
             logs.map((log, index) => (
               <div className={styles.log} key={index}>
