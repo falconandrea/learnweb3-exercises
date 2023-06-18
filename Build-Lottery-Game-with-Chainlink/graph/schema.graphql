@@ -1,8 +1,0 @@
-type Game @entity {
-  id: ID!
-  maxPlayers: Int!
-  entryFee: BigInt!
-  winner: Bytes
-  requestId: Bytes
-  players: [Bytes!]!
-}
