@@ -94,6 +94,8 @@ export default function Home() {
    */
   const startGame = async () => {
     try {
+      setSuccessMessage("")
+      setErrorMessage("")
       // Get the signer from web3Modal, which in our case is MetaMask
       // No need for the Signer here, as we are only reading state from the blockchain
       const signer = await getProviderOrSigner(true);
@@ -109,8 +111,10 @@ export default function Home() {
       const tx = await randomGameNFTContract.startGame(maxPlayers, entryFee);
       await tx.wait();
       setLoading(false);
+      setSuccessMessage("Game started correctly")
     } catch (err) {
       console.error(err);
+      setErrorMessage("Problem during starting game")
       setLoading(false);
     }
   };
@@ -120,6 +124,8 @@ export default function Home() {
    */
   const joinGame = async () => {
     try {
+      setSuccessMessage("")
+      setErrorMessage("")
       // Get the signer from web3Modal, which in our case is MetaMask
       // No need for the Signer here, as we are only reading state from the blockchain
       const signer = await getProviderOrSigner(true);
@@ -137,8 +143,10 @@ export default function Home() {
       });
       await tx.wait();
       setLoading(false);
+      setSuccessMessage("You are joined correctly")
     } catch (error) {
       console.error(error);
+      setErrorMessage("Error during joining game")
       setLoading(false);
     }
   };
@@ -314,6 +322,9 @@ export default function Home() {
           />
           <input
             type="number"
+            min="0"
+            step="1"
+            required
             className={styles.input}
             onChange={(e) => {
               // The user will enter the value for maximum players that can join the game
