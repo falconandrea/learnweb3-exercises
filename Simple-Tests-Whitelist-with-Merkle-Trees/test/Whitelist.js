@@ -4,7 +4,8 @@ const { MerkleTree } = require("merkletreejs")
 
 function encodeLeaf(address, spots) {
   // Same as `abi.encodePacked` in Solidity
-  return ethers.utils.defaultAbiCoder.encode(
+  const abiCoder = ethers.AbiCoder.defaultAbiCoder()
+  return abiCoder.encode(
     ["address", "uint64"], // The datatypes of arguments to encode
     [address, spots] // The actual values
   )
@@ -41,9 +42,8 @@ describe("Merkle Trees", function () {
     const root = merkleTree.getHexRoot();
 
     // Deploy the Whitelist Contract
-    const whitelist = await ethers.getContractFactory("Whitelist");
-    const Whitelist = await whitelist.deploy(root);
-    await Whitelist.deployed();
+    const Whitelist = await ethers.deployContract("Whitelist", [root]);
+    await Whitelist.waitForDeployment();
 
     // Check for valid addresses
     for (let i = 0; i < 6; i++) {
