@@ -67,7 +67,9 @@ describe("Merkle Trees", function () {
     }
 
     // Check for invalid addresses
-    const verifiedInvalid = await Whitelist.checkInWhitelist([], 2);
+    const wrongLeaf = keccak256(encodeLeaf("0x0000000000000000000000000000000000000000", 2))
+    const invalidProof = merkleTree.getHexProof(wrongLeaf)
+    const verifiedInvalid = await Whitelist.checkInWhitelist(invalidProof, 2);
     expect(verifiedInvalid).to.equal(false);
   })
 })
