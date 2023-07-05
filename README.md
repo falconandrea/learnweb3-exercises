@@ -1,3 +1,7 @@
+<a href="https://trackgit.com">
+<img src="https://us-central1-trackgit-analytics.cloudfunctions.net/token/ping/ljptsxspul71ki1npnlj" alt="trackgit-views" />
+</a>
+
 # LearnWeb3 DAO Exercises
 
 Exercises on [LearnWeb3 Website](https://learnweb3.io/)
